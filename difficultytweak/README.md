@@ -30,7 +30,7 @@ The Difficulty Tweaks Mod for `Fast Food Simulator`, dynamically adjusts various
 - `/show_patience_tweaks`: Display the current status of dynamic patience adjustments.
 ## Installation
 
-1. Download the latest release from the [Releases page](https://github.com/creativious/DifficultyTweaksMod/releases) or from the nexus page (To be linked).
+1. Download the latest release from the [Releases page](https://github.com/Creativious/fastfoodsim_difficultytweaks/releases) or from the nexus page (To be linked).
 2. Download the latest version of the modloader from the [RE-UE4SS](https://github.com/UE4SS-RE/RE-UE4SS) repository.
 3. Copy the contents to the games `\Binaries\Win64` folder, such as `(SteamLibrary)\steamapps\common\Fast Food Simulator\ProjectBakery\Binaries\Win64`
 4. Start the game so that the mod loader can generate the required files
