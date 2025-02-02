@@ -357,8 +357,10 @@ local function processCustomers()
                 local customer_queue_number = customer:GetPropertyValue("CustomerQueueNumber")
                 local customer_order_number = customer:GetPropertyValue("OrderNumberOfPerson")
                 local patience_speed = customer:GetPropertyValue("PatienceSpeed")
-                if patience_speed ~= round(DEFAULT_PATIENCE * PATIENCE_MULTIPLIER) then
-                    customer:SetPatienceSpeed(round(DEFAULT_PATIENCE * PATIENCE_MULTIPLIER))
+                if CONFIG.getEnablePatienceTweaks() then
+                    if patience_speed ~= round(DEFAULT_PATIENCE * PATIENCE_MULTIPLIER) then
+                        customer:SetPatienceSpeed(round(DEFAULT_PATIENCE * PATIENCE_MULTIPLIER))
+                    end
                 end
                 if customer_queue_number ~= -1 then
                     WAITING_CUSTOMERS = WAITING_CUSTOMERS + 1
@@ -717,6 +719,9 @@ local function StartMod()
     end)
 
     RegisterHook('/Game/Blueprints/Characters/Customer/Tasks/BTT_CustomerEating.BTT_CustomerEating_C:RandomEatingMode', function(context)
+        if CONFIG.getEnableEatingDurationTweaks() == false then
+            return
+        end
         ---@type UBTT_CustomerEating_C
         local customerEating = context:get()
         local eating_duration = math.random(CONFIG["MIN_POSSIBLE_EATING_TIME"], CONFIG["MAX_POSSIBLE_EATING_TIME"])
