@@ -1,13 +1,15 @@
 # Difficulty Tweaks Mod for Fast Food Simulator
 
-Welcome to the **Difficulty Tweaks Mod**, a comprehensive modification for Unreal Engine 4's *Fast Food Simulator*. Created by *Creativious*, this mod is designed to enhance your gameplay experience by dynamically adjusting the difficulty level based on various in-game factors.
+The Difficulty Tweaks Mod for `Fast Food Simulator`, dynamically adjusts various gameplay elements to elevate the game's challenge. It scales customer numbers based on restaurant level and days played, decreases customer patience as more customers are seated and waiting, and adjusts eating duration based on seating. An in-game command system also allows for real-time adjustments.
+
 
 ## Features
 
 - **Dynamic Customer Management**: Adjust the number of customers based on the restaurant level and total days played, ensuring a nightmarish experience.
 - **Configurable Settings**: Easily modify the minimum and maximum possible customers via in-game commands or configuration files (json).
-- **Enhanced Customer Patience**: Automatically adjusts customer patience levels based on restaurant conditions, providing a more realistic simulation.
-- **Eating Duration Control**: Customize customer eating durations to fine-tune the pace of your restaurant operations.
+- **Adaptive Customer Patience**: The patience of customers will adjust based on the amount of customers seated and waiting, with a slight boost if all tables are full. This ensures that the game is still possible to complete, but still provides a formidable challenge.
+- **Dynamic Eating Duration**: Adjust the eating duration of customers based on the amount of customers seated, with a slight boost if all tables are full. This ensures that the game is still possible to complete, but still provides a formidable challenge.
+- **In-Game Command System**: Enter commands directly into the game's chat, receive instant feedback, and adjust settings on the fly.
 
 ## Commands
 
@@ -17,8 +19,6 @@ Welcome to the **Difficulty Tweaks Mod**, a comprehensive modification for Unrea
 - `/show_min_customers`: Display the current minimum customers setting.
 - `/show_max_customers`: Display the current maximum customers setting.
 
-## Getting Started
-
 ## Installation
 
 1. Download the latest release from the [Releases page](https://github.com/creativious/DifficultyTweaksMod/releases) or from the nexus page (To be linked).
@@ -26,3 +26,8 @@ Welcome to the **Difficulty Tweaks Mod**, a comprehensive modification for Unrea
 3. Copy the contents to the games `\Binaries\Win64` folder, such as `(SteamLibrary)\steamapps\common\Fast Food Simulator\ProjectBakery\Binaries\Win64`
 4. Start the game so that the mod loader can generate the required files
 5. Extract the mod's zip or 7z file to the mods directory, and suffer through the pain of this mod
+
+## Disclaimer
+This mod may be randomly abandoned for no reason (My interests change ig 🤷‍♂️), without notice, or any other changes. USE AT YOUR OWN RISK.
+
+
