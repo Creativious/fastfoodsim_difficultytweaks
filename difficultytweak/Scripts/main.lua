@@ -411,7 +411,7 @@ function setMinCustomersCommand(minCustomers)
         sendWarningSystemMessage("Usage: /set_min_customers <number>")
         return
     end
-    sendInfoSystemMessage("Minimum Customers set to " .. minCustomers)
+    sendInfoSystemMessage("Minimum Customers set to " .. tostring(minCustomers))
     CONFIG.setMinCustomers(minCustomers)
     sendInfoSystemMessage("Reload saves to apply changes.")
 end
@@ -432,17 +432,17 @@ function setMaxCustomersCommand(maxCustomers)
         sendWarningSystemMessage("Usage: /set_max_customers <number>")
         return
     end
-    sendInfoSystemMessage("Maximum Customers set to " .. maxCustomers)
+    sendInfoSystemMessage("Maximum Customers set to " .. tostring(maxCustomers))
     CONFIG.setMaxCustomers(maxCustomers)
     sendInfoSystemMessage("Reload saves to apply changes.")
 end
 
 function showMinCustomersCommand()
-    sendInfoSystemMessage("Minimum Customers: " .. CONFIG.getMinCustomers())
+    sendInfoSystemMessage("Minimum Customers: " .. tostring(CONFIG.getMinCustomers()))
 end
 
 function showMaxCustomersCommand()
-    sendInfoSystemMessage("Maximum Customers: " .. CONFIG.getMaxCustomers())
+    sendInfoSystemMessage("Maximum Customers: " .. tostring(CONFIG.getMaxCustomers()))
 end
 
 function resetConfigCommand()
@@ -462,13 +462,13 @@ function setBasePatienceMultiplierCommand(basePatienceMultiplier)
         sendWarningSystemMessage("Usage: /set_base_patience_multiplier <number>")
         return
     end
-    sendInfoSystemMessage("Base Patience Multiplier set to " .. basePatienceMultiplier)
+    sendInfoSystemMessage("Base Patience Multiplier set to " .. tostring(basePatienceMultiplier))
     CONFIG.setBasePatienceMultiplier(basePatienceMultiplier)
     sendInfoSystemMessage("Reload saves to apply changes.")
 end
 
 function showBasePatienceMultiplierCommand()
-    sendInfoSystemMessage("Base Patience Multiplier: " .. CONFIG.getBasePatienceMultiplier())
+    sendInfoSystemMessage("Base Patience Multiplier: " .. tostring(CONFIG.getBasePatienceMultiplier()))
 end
 
 function setMinEatingDurationCommand(minEatingDuration)
@@ -482,7 +482,7 @@ function setMinEatingDurationCommand(minEatingDuration)
         sendWarningSystemMessage("Usage: /set_min_eating_duration <number>")
         return
     end
-    sendInfoSystemMessage("Minimum Eating Duration set to " .. minEatingDuration)
+    sendInfoSystemMessage("Minimum Eating Duration set to " .. tostring(minEatingDuration))
     CONFIG.setMinEatingDuration(minEatingDuration)
     sendInfoSystemMessage("Reload saves to apply changes.")
 end
@@ -502,12 +502,24 @@ function setMaxEatingDurationCommand(maxEatingDuration)
         sendWarningSystemMessage("Usage: /set_max_eating_duration <number>")
         return
     end
-    sendInfoSystemMessage("Maximum Eating Duration set to " .. maxEatingDuration)
+    sendInfoSystemMessage("Maximum Eating Duration set to " .. tostring(maxEatingDuration))
     CONFIG.setMaxEatingDuration(maxEatingDuration)
     sendInfoSystemMessage("Reload saves to apply changes.")
 end
 
+function parseToBoolean(value)
+    value = string.lower(value)
+    
+    if value == "true" then
+        return true
+    elseif value == "false" then
+        return false
+    end
+    return nil
+end
+
 function setPatienceTweaksCommand(patienceTweaks)
+    patienceTweaks = parseToBoolean(patienceTweaks)
     if patienceTweaks == nil then
         sendWarningSystemMessage("Incorrect usage of the command.")
         sendWarningSystemMessage("Usage: /set_patience_tweaks <true/false>")
@@ -518,16 +530,17 @@ function setPatienceTweaksCommand(patienceTweaks)
         sendWarningSystemMessage("Usage: /set_patience_tweaks <true/false>")
         return
     end
-    sendInfoSystemMessage("Patience Tweaks set to " .. patienceTweaks)
-    CONFIG.setPatienceTweaks(patienceTweaks)
+    sendInfoSystemMessage("Patience Tweaks set to " .. tostring(patienceTweaks))
+    CONFIG.setEnablePatienceTweaks(patienceTweaks)
     sendInfoSystemMessage("Reload saves to apply changes.")
 end
 
 function showPatienceTweaksCommand()
-    sendInfoSystemMessage("Patience Tweaks: " .. CONFIG.getPatienceTweaks())
+    sendInfoSystemMessage("Patience Tweaks: " .. tostring(CONFIG.getEnablePatienceTweaks()))
 end
 
 function setEatingDurationTweaksCommand(eatingDurationTweaks)
+    eatingDurationTweaks = parseToBoolean(eatingDurationTweaks)
     if eatingDurationTweaks == nil then
         sendWarningSystemMessage("Incorrect usage of the command.")
         sendWarningSystemMessage("Usage: /set_eating_duration_tweaks <true/false>")
@@ -538,17 +551,17 @@ function setEatingDurationTweaksCommand(eatingDurationTweaks)
         sendWarningSystemMessage("Usage: /set_eating_duration_tweaks <true/false>")
         return
     end
-    sendInfoSystemMessage("Eating Duration Tweaks set to " .. eatingDurationTweaks)
-    CONFIG.setEatingDurationTweaks(eatingDurationTweaks)
+    sendInfoSystemMessage("Eating Duration Tweaks set to " .. tostring(eatingDurationTweaks))
+    CONFIG.setEnableEatingDurationTweaks(eatingDurationTweaks)
     sendInfoSystemMessage("Reload saves to apply changes.")
 end
 
 function showEatingDurationTweaksCommand()
-    sendInfoSystemMessage("Eating Duration Tweaks: " .. CONFIG.getEatingDurationTweaks())
+    sendInfoSystemMessage("Eating Duration Tweaks: " .. tostring(CONFIG.getEnableEatingDurationTweaks()))
 end
 
 function showMaxEatingDurationCommand()
-    sendInfoSystemMessage("Maximum Eating Duration: " .. CONFIG.getMaxEatingDuration())
+    sendInfoSystemMessage("Maximum Eating Duration: " .. tostring(CONFIG.getMaxEatingDuration()))
 end
 
 function displayStartupMessage()
