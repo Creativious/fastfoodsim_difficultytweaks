@@ -10,9 +10,167 @@ CUSTOMERS_FULL = false
 
 CONFIG = {
     MIN_POSSIBLE_CUSTOMERS = 25,
-    MAX_POSSIBLE_CUSTOMERS=  500
+    MAX_POSSIBLE_CUSTOMERS=  500,
+    MIN_EATING_DURATION = 15.0,
+    BASE_PATIENCE_MULTIPLIER = 1.0,
+    MAX_EATING_DURATION = 30.0,
+    ENABLE_EATING_DURATION_TWEAKS = true,
+    ENABLE_PATIENCE_TWEAKS = true
 }
-BASE_PATIENCE_MULTIPLIER = 1.5 + ((CONFIG["MAX_POSSIBLE_CUSTOMERS"] / 50) / 10)
+
+function calcBasePatienceMultiplier()
+    return (CONFIG.getBasePatienceMultiplier() + (CONFIG.getMaxCustomers() / 50) / 10)
+end
+
+BASE_PATIENCE_MULTIPLIER = 1.0
+
+
+---#region Config Getters
+
+function CONFIG.getMaxCustomers()
+    return CONFIG["MAX_POSSIBLE_CUSTOMERS"]
+end
+
+function CONFIG.getMinCustomers()
+    return CONFIG["MIN_POSSIBLE_CUSTOMERS"]
+end
+
+function CONFIG.getMaxEatingDuration()
+    return CONFIG["MAX_EATING_DURATION"]
+end
+
+function CONFIG.getMinEatingDuration()
+    return CONFIG["MIN_EATING_DURATION"]
+end
+
+function CONFIG.getBasePatienceMultiplier()
+    return CONFIG["BASE_PATIENCE_MULTIPLIER"]
+end
+
+function CONFIG.getEnableEatingDurationTweaks()
+    return CONFIG["ENABLE_EATING_DURATION_TWEAKS"]
+end
+
+function CONFIG.getEnablePatienceTweaks()
+    return CONFIG["ENABLE_PATIENCE_TWEAKS"]
+end
+
+function CONFIG.getConfig()
+    local conf = {}
+    for key, value in pairs(CONFIG) do
+        conf[key] = value
+    end
+    conf = filterFunctionsFromTable(conf)
+    return conf
+end
+
+---#endregion
+
+---#region Config Setters
+
+function CONFIG.setMinCustomers(value)
+    CONFIG["MIN_POSSIBLE_CUSTOMERS"] = value
+    CONFIG.write()
+end
+
+function CONFIG.setMaxCustomers(value)
+    CONFIG["MAX_POSSIBLE_CUSTOMERS"] = value
+    BASE_PATIENCE_MULTIPLIER = CONFIG.getBasePatienceMultiplier() + ((value / 50) / 10)
+    CONFIG.write()
+end
+
+function CONFIG.setBasePatienceMultiplier(value)
+    CONFIG["BASE_PATIENCE_MULTIPLIER"] = value
+    BASE_PATIENCE_MULTIPLIER = calcBasePatienceMultiplier()
+    CONFIG.write()
+end
+
+function CONFIG.setMinEatingDuration(value)
+    CONFIG["MIN_EATING_DURATION"] = value
+    CONFIG.write()
+end
+
+function CONFIG.setMaxEatingDuration(value)
+    CONFIG["MAX_EATING_DURATION"] = value
+    CONFIG.write()
+end
+
+function CONFIG.setEnableEatingDurationTweaks(value)
+    CONFIG["ENABLE_EATING_DURATION_TWEAKS"] = value
+    CONFIG.write()
+end
+
+function CONFIG.setEnablePatienceTweaks(value)
+    CONFIG["ENABLE_PATIENCE_TWEAKS"] = value
+    CONFIG.write()
+end
+
+---comment
+---@param value table
+function CONFIG.setConfig(value)
+    value = filterFunctionsFromTable(value)
+    for key, value in pairs(value) do
+        CONFIG[key] = value
+    end
+    CONFIG.write()
+end
+
+---#endregion
+
+
+---#region Config Reset
+
+function CONFIG.resetMaxCustomers()
+    CONFIG["MAX_POSSIBLE_CUSTOMERS"] = 500
+end
+
+function CONFIG.resetMinCustomers()
+    CONFIG["MIN_POSSIBLE_CUSTOMERS"] = 25
+end
+
+function CONFIG.resetMinEatingDuration()
+    CONFIG["MIN_EATING_DURATION"] = 15.0
+end
+
+function CONFIG.resetMaxEatingDuration()
+    CONFIG["MAX_EATING_DURATION"] = 30.0
+end
+
+function CONFIG.resetBasePatienceMultiplier()
+    CONFIG["BASE_PATIENCE_MULTIPLIER"] = 1.0
+end
+
+function CONFIG.resetEnableEatingDurationTweaks()
+    CONFIG["ENABLE_EATING_DURATION_TWEAKS"] = true
+end
+
+function CONFIG.resetEnablePatienceTweaks()
+    CONFIG["ENABLE_PATIENCE_TWEAKS"] = true
+end
+
+function CONFIG.reset()
+    CONFIG.resetMaxCustomers()
+    CONFIG.resetMinCustomers()
+    CONFIG.resetMinEatingDuration()
+    CONFIG.resetMaxEatingDuration()
+    CONFIG.resetBasePatienceMultiplier()
+    CONFIG.resetEnableEatingDurationTweaks()
+    CONFIG.resetEnablePatienceTweaks()
+    CONFIG.write()
+end
+
+---#endregion
+
+function CONFIG.write()
+    write_to_config(CONFIG.getConfig())
+end
+
+function CONFIG.read()
+    CONFIG.setConfig(read_config())
+    CONFIG.write()
+end
+
+BASE_PATIENCE_MULTIPLIER = calcBasePatienceMultiplier()
 
 PATIENCE_MULTIPLIER = BASE_PATIENCE_MULTIPLIER
 
@@ -23,9 +181,6 @@ DEFAULT_PATIENCE = 0
 WAITING_CUSTOMERS = 0
 
 FIRST_TIME_GETTING_HELP_MESSSAGE = false
-
-DEFAULT_MIN_EATING_DURATION = 15.0
-DEFAULT_MAX_EATING_DURATION = 30.0
 
 EATING_DURATION_BASE_MULTIPLIER = 1.0
 
@@ -43,13 +198,13 @@ function getMaxCustomers()
     print("Level: " .. tostring(level) .. "\n")
     print("Total Days: " .. tostring(total_days) .. "\n")
 
-    local customer_count = CONFIG["MIN_POSSIBLE_CUSTOMERS"] + CONFIG["MAX_POSSIBLE_CUSTOMERS"] * (0 + ((level - 1) / 600) + (total_days / 400))
+    local customer_count = CONFIG.getMinCustomers() + CONFIG.getMaxCustomers() * (0 + ((level - 1) / 600) + (total_days / 400))
     customer_count = round(customer_count)
-    if customer_count > CONFIG["MAX_POSSIBLE_CUSTOMERS"] then
-        customer_count = CONFIG["MAX_POSSIBLE_CUSTOMERS"]
+    if customer_count > CONFIG.getMaxCustomers() then
+        customer_count = CONFIG.getMaxCustomers()
     end
-    if customer_count < CONFIG["MIN_POSSIBLE_CUSTOMERS"] then
-        customer_count = CONFIG["MIN_POSSIBLE_CUSTOMERS"]
+    if customer_count < CONFIG.getMinCustomers() then
+        customer_count = CONFIG.getMinCustomers()
     end
     print("Customer Count: " .. tostring(customer_count) .. "\n")
     sendInfoSystemMessage(tostring(customer_count) .. " Customers will come by today!")
@@ -68,13 +223,32 @@ end
 --- Sends a message to the chat with the info type
 ---@param message string
 function sendInfoSystemMessage(message)
-    sendSystemMessage(0, message)
+    auto_split_system_message(0, message)
 end
 
 --- Sends a message to the chat with the warning type
 ---@param message string
 function sendWarningSystemMessage(message)
-    sendSystemMessage(1, message)
+    auto_split_system_message(1, message)
+end
+
+---Sends a message to the chat with the specified type
+---@param type number
+---@param message string
+function auto_split_system_message(type, message)
+    local max_length = 48
+    local new_message = ""
+    for word in string.gmatch(message, "[^%s]+") do
+        local word_length = string.len(word)
+        if string.len(new_message) + word_length > max_length then
+            sendSystemMessage(type, new_message)
+            new_message = ""
+        end
+        new_message = new_message .. word .. " "
+    end
+    if string.len(new_message) > 0 then
+        sendSystemMessage(type, new_message)
+    end
 end
 
 --- Sends a message to the chat.
@@ -100,16 +274,40 @@ CONFIG_LOCATION = "Mods/difficultytweak/config.json"
 --- Writes the config file
 ---@param table table
 function write_to_config(table)
+    table = filterFunctionsFromTable(table)
+    if type(table) ~= "table" then
+        error("Expected a table, got " .. type(table))
+    end
+    print(tostring(table))
     local f = io.open(CONFIG_LOCATION, "w")
     f:write(Json.encode(table))
     f:close()
+end
+
+--- Filters out functions from a table
+---@param table table
+---@return table
+function filterFunctionsFromTable(table)
+    local result = {}
+    for key, value in pairs(table) do
+        if type(value) ~= "function" then
+            result[key] = value
+        end
+    end
+    return result
 end
 
 --- Reads the config file
 ---@return table
 function read_config()
     local f = io.open(CONFIG_LOCATION, "r")
-    local result = Json.decode(f:read())
+    local result_t = f:read()
+    f:close()
+    if (result_t == nil) then
+        CONFIG.write()
+        return CONFIG.getConfig()
+    end
+    local result = Json.decode(result_t)
     return result
 end
 
@@ -128,9 +326,9 @@ function file_exists(name)
 end
 
 if file_exists(CONFIG_LOCATION) then
-    CONFIG = read_config()
+    CONFIG.read()
 else
-    write_to_config(CONFIG)
+    CONFIG.write()
 end
 
 --- Rounds a number
@@ -203,9 +401,18 @@ function setMinCustomersCommand(minCustomers)
         sendWarningSystemMessage("Usage: /set_min_customers <number>")
         return
     end
+    if type(minCustomers) ~= "number" then
+        sendWarningSystemMessage("Minimum customers must be a number.")
+        sendWarningSystemMessage("Usage: /set_min_customers <number>")
+        return
+    end
+    if minCustomers < 1 then
+        sendWarningSystemMessage("Minimum customers must be above 0.")
+        sendWarningSystemMessage("Usage: /set_min_customers <number>")
+        return
+    end
     sendInfoSystemMessage("Minimum Customers set to " .. minCustomers)
-    CONFIG["MIN_POSSIBLE_CUSTOMERS"] = minCustomers
-    write_to_config(CONFIG)
+    CONFIG.setMinCustomers(minCustomers)
     sendInfoSystemMessage("Reload saves to apply changes.")
 end
 
@@ -215,36 +422,207 @@ function setMaxCustomersCommand(maxCustomers)
         sendWarningSystemMessage("Usage: /set_max_customers <number>")
         return
     end
+    if type(maxCustomers) ~= "number" then
+        sendWarningSystemMessage("Maximum customers must be a number.")
+        sendWarningSystemMessage("Usage: /set_max_customers <number>")
+        return
+    end
+    if maxCustomers < 1 then
+        sendWarningSystemMessage("Maximum customers must be above 0.")
+        sendWarningSystemMessage("Usage: /set_max_customers <number>")
+        return
+    end
     sendInfoSystemMessage("Maximum Customers set to " .. maxCustomers)
-    CONFIG["MAX_POSSIBLE_CUSTOMERS"] = maxCustomers
-    write_to_config(CONFIG)
+    CONFIG.setMaxCustomers(maxCustomers)
     sendInfoSystemMessage("Reload saves to apply changes.")
 end
 
 function showMinCustomersCommand()
-    sendInfoSystemMessage("Minimum Customers: " .. CONFIG["MIN_POSSIBLE_CUSTOMERS"])
+    sendInfoSystemMessage("Minimum Customers: " .. CONFIG.getMinCustomers())
 end
 
 function showMaxCustomersCommand()
-    sendInfoSystemMessage("Maximum Customers: " .. CONFIG["MAX_POSSIBLE_CUSTOMERS"])
+    sendInfoSystemMessage("Maximum Customers: " .. CONFIG.getMaxCustomers())
 end
 
 function resetConfigCommand()
     sendInfoSystemMessage("Resetting config file.")
-    CONFIG["MIN_POSSIBLE_CUSTOMERS"] = 25
-    CONFIG["MAX_POSSIBLE_CUSTOMERS"] = 500
-    write_to_config(CONFIG)
+    CONFIG.reset()
     sendInfoSystemMessage("Reload saves to apply changes.")
+end
+
+function setBasePatienceMultiplierCommand(basePatienceMultiplier)
+    if basePatienceMultiplier == nil then
+        sendWarningSystemMessage("Incorrect usage of the command.")
+        sendWarningSystemMessage("Usage: /set_base_patience_multiplier <number>")
+        return
+    end
+    if type(basePatienceMultiplier) ~= "number" then
+        sendWarningSystemMessage("Base patience multiplier must be a number.")
+        sendWarningSystemMessage("Usage: /set_base_patience_multiplier <number>")
+        return
+    end
+    sendInfoSystemMessage("Base Patience Multiplier set to " .. basePatienceMultiplier)
+    CONFIG.setBasePatienceMultiplier(basePatienceMultiplier)
+    sendInfoSystemMessage("Reload saves to apply changes.")
+end
+
+function showBasePatienceMultiplierCommand()
+    sendInfoSystemMessage("Base Patience Multiplier: " .. CONFIG.getBasePatienceMultiplier())
+end
+
+function setMinEatingDurationCommand(minEatingDuration)
+    if minEatingDuration == nil then
+        sendWarningSystemMessage("Incorrect usage of the command.")
+        sendWarningSystemMessage("Usage: /set_min_eating_duration <number>")
+        return
+    end
+    if type(minEatingDuration) ~= "number" then
+        sendWarningSystemMessage("Minimum eating duration must be a number.")
+        sendWarningSystemMessage("Usage: /set_min_eating_duration <number>")
+        return
+    end
+    sendInfoSystemMessage("Minimum Eating Duration set to " .. minEatingDuration)
+    CONFIG.setMinEatingDuration(minEatingDuration)
+    sendInfoSystemMessage("Reload saves to apply changes.")
+end
+
+function showMinEatingDurationCommand()
+    sendInfoSystemMessage("Minimum Eating Duration: " .. CONFIG.getMinEatingDuration())
+end
+
+function setMaxEatingDurationCommand(maxEatingDuration)
+    if maxEatingDuration == nil then
+        sendWarningSystemMessage("Incorrect usage of the command.")
+        sendWarningSystemMessage("Usage: /set_max_eating_duration <number>")
+        return
+    end
+    if type(maxEatingDuration) ~= "number" then
+        sendWarningSystemMessage("Maximum eating duration must be a number.")
+        sendWarningSystemMessage("Usage: /set_max_eating_duration <number>")
+        return
+    end
+    sendInfoSystemMessage("Maximum Eating Duration set to " .. maxEatingDuration)
+    CONFIG.setMaxEatingDuration(maxEatingDuration)
+    sendInfoSystemMessage("Reload saves to apply changes.")
+end
+
+function setPatienceTweaksCommand(patienceTweaks)
+    if patienceTweaks == nil then
+        sendWarningSystemMessage("Incorrect usage of the command.")
+        sendWarningSystemMessage("Usage: /set_patience_tweaks <true/false>")
+        return
+    end
+    if type(patienceTweaks) ~= "boolean" then
+        sendWarningSystemMessage("Patience tweaks must be a boolean.")
+        sendWarningSystemMessage("Usage: /set_patience_tweaks <true/false>")
+        return
+    end
+    sendInfoSystemMessage("Patience Tweaks set to " .. patienceTweaks)
+    CONFIG.setPatienceTweaks(patienceTweaks)
+    sendInfoSystemMessage("Reload saves to apply changes.")
+end
+
+function showPatienceTweaksCommand()
+    sendInfoSystemMessage("Patience Tweaks: " .. CONFIG.getPatienceTweaks())
+end
+
+function setEatingDurationTweaksCommand(eatingDurationTweaks)
+    if eatingDurationTweaks == nil then
+        sendWarningSystemMessage("Incorrect usage of the command.")
+        sendWarningSystemMessage("Usage: /set_eating_duration_tweaks <true/false>")
+        return
+    end
+    if type(eatingDurationTweaks) ~= "boolean" then
+        sendWarningSystemMessage("Eating duration tweaks must be a boolean.")
+        sendWarningSystemMessage("Usage: /set_eating_duration_tweaks <true/false>")
+        return
+    end
+    sendInfoSystemMessage("Eating Duration Tweaks set to " .. eatingDurationTweaks)
+    CONFIG.setEatingDurationTweaks(eatingDurationTweaks)
+    sendInfoSystemMessage("Reload saves to apply changes.")
+end
+
+function showEatingDurationTweaksCommand()
+    sendInfoSystemMessage("Eating Duration Tweaks: " .. CONFIG.getEatingDurationTweaks())
+end
+
+function showMaxEatingDurationCommand()
+    sendInfoSystemMessage("Maximum Eating Duration: " .. CONFIG.getMaxEatingDuration())
 end
 
 function displayStartupMessage()
     sendInfoSystemMessage("Difficulty Tweaks - By Creativious")
-    sendInfoSystemMessage("Commands:")
-    sendInfoSystemMessage("/set_max_customers [default: 25] <number>")
-    sendInfoSystemMessage("/set_min_customers [default: 500] <number>")
-    sendInfoSystemMessage("/df_reset - Resets the config file")
-    sendInfoSystemMessage("/show_min_customers")
-    sendInfoSystemMessage("/show_max_customers")
+    sendInfoSystemMessage("Commands (Listed on mod page):")
+    sendInfoSystemMessage("/help <command>")
+    sendInfoSystemMessage("^ Displays information about a command.")
+end
+
+function helpCommand(command)
+    if command == nil then
+        sendWarningSystemMessage("Incorrect usage of the command.")
+        sendWarningSystemMessage("Usage: /help <command>")
+        return
+    end
+    command = command:gsub("[/\\]", "")
+    if command == "set_min_customers" then
+        sendInfoSystemMessage("Usage: /set_min_customers <number>")
+        sendInfoSystemMessage("Default: 25")
+        sendInfoSystemMessage("Sets the minimum amount of customers that can be in the bakery at any given time.")
+    elseif command == "set_max_customers" then
+        sendInfoSystemMessage("Usage: /set_max_customers <number>")
+        sendInfoSystemMessage("Default: 500")
+        sendInfoSystemMessage("Sets the maximum amount of customers that can be in the bakery at any given time.")
+    elseif command == "set_base_patience_multiplier" then
+        sendInfoSystemMessage("Usage: /set_base_patience_multiplier <number>")
+        sendInfoSystemMessage("Default: 1.0")
+        sendInfoSystemMessage("Sets the base patience multiplier for when there are no customers in the bakery.")
+    elseif command == "set_min_eating_duration" then
+        sendInfoSystemMessage("Usage: /set_min_eating_duration <number>")
+        sendInfoSystemMessage("Default: 15.0")
+        sendInfoSystemMessage("Sets the minimum eating duration for customers.")
+    elseif command == "set_max_eating_duration" then
+        sendInfoSystemMessage("Usage: /set_max_eating_duration <number>")
+        sendInfoSystemMessage("Default: 30.0")
+        sendInfoSystemMessage("Sets the maximum eating duration for customers.")
+    elseif command == "set_patience_tweaks" then
+        sendInfoSystemMessage("Usage: /set_patience_tweaks <true/false>")
+        sendInfoSystemMessage("Default: true")
+        sendInfoSystemMessage("Sets the patience tweaks on or off.")
+    elseif command == "set_eating_duration_tweaks" then
+        sendInfoSystemMessage("Usage: /set_eating_duration_tweaks <true/false>")
+        sendInfoSystemMessage("Default: true")
+        sendInfoSystemMessage("Sets the eating duration tweaks on or off.")
+    elseif command == "show_patience_tweaks" then
+        sendInfoSystemMessage("Usage: /show_patience_tweaks")
+        sendInfoSystemMessage("Shows the current state of the patience tweaks.")
+    elseif command == "show_eating_duration_tweaks" then
+        sendInfoSystemMessage("Usage: /show_eating_duration_tweaks")
+        sendInfoSystemMessage("Shows the current state of the eating duration tweaks.")
+    elseif command == "show_min_customers" then
+        sendInfoSystemMessage("Usage: /show_min_customers")
+        sendInfoSystemMessage("Shows the current minimum amount of customers that can be in the bakery at any given time.")
+    elseif command == "show_max_customers" then
+        sendInfoSystemMessage("Usage: /show_max_customers")
+        sendInfoSystemMessage("Shows the current maximum amount of customers that can be in the bakery at any given time.")
+    elseif command == "show_base_patience_multiplier" then
+        sendInfoSystemMessage("Usage: /show_base_patience_multiplier")
+        sendInfoSystemMessage("Shows the current base patience multiplier for when there are no customers in the bakery.")
+    elseif command == "show_min_eating_duration" then
+        sendInfoSystemMessage("Usage: /show_min_eating_duration")
+        sendInfoSystemMessage("Shows the current minimum eating duration for customers.")
+    elseif command == "show_max_eating_duration" then
+        sendInfoSystemMessage("Usage: /show_max_eating_duration")
+        sendInfoSystemMessage("Shows the current maximum eating duration for customers.")
+    elseif command == "df_reset" then
+        sendInfoSystemMessage("Usage: /df_reset")
+        sendInfoSystemMessage("Resets the config file to its default state.")
+    elseif command == "help" then
+        sendInfoSystemMessage("Usage: /help <command>")
+        sendInfoSystemMessage("Displays information about a command.")
+    else
+        sendWarningSystemMessage("Unknown command. Refer to the mod page for a list of commands.")
+    end
 end
 
 function handleCommands(command)
@@ -255,22 +633,52 @@ function handleCommands(command)
         reset_config_command_string = "/df_reset"
         show_min_customers_command_string = "/show_min_customers"
         show_max_customers_command_string = "/show_max_customers"
+        help_command_string = "/help "
+        set_base_patience_multiplier_command_string = "/set_base_patience_multiplier "
+        show_base_patience_multiplier_command_string = "/show_base_patience_multiplier"
+        set_min_eating_duration_command_string = "/set_min_eating_duration "
+        show_min_eating_duration_command_string = "/show_min_eating_duration"
+        set_max_eating_duration_command_string = "/set_max_eating_duration "
+        show_max_eating_duration_command_string = "/show_max_eating_duration"
+        set_patience_tweaks_command_string = "/set_patience_tweaks "
+        show_patience_tweaks_command_string = "/show_patience_tweaks"
+        set_eating_duration_tweaks_command_string = "/set_eating_duration_tweaks "
+        show_eating_duration_tweaks_command_string = "/show_eating_duration_tweaks"
 
         if string.sub(command, 1, #show_min_customers_command_string) == show_min_customers_command_string then
             showMinCustomersCommand()
-        end
-        if string.sub(command, 1, #show_max_customers_command_string) == show_max_customers_command_string then
+        elseif string.sub(command, 1, #show_max_customers_command_string) == show_max_customers_command_string then
             showMaxCustomersCommand()
-        end
-
-        if string.sub(command, 1, #reset_config_command_string) == reset_config_command_string then
+        elseif string.sub(command, 1, #reset_config_command_string) == reset_config_command_string then
             resetConfigCommand()
-        end
-        if string.sub(command, 1, #max_customers_command_string) == max_customers_command_string then
+        elseif string.sub(command, 1, #max_customers_command_string) == max_customers_command_string then
             setMaxCustomersCommand(tonumber(string.sub(command, #max_customers_command_string + 1, #command)))
-        end
-        if string.sub(command, 1, #min_customers_command_string) == min_customers_command_string then
+        elseif string.sub(command, 1, #min_customers_command_string) == min_customers_command_string then
             setMinCustomersCommand(tonumber(string.sub(command, #min_customers_command_string + 1, #command)))
+        elseif string.sub(command, 1, #help_command_string) == help_command_string then
+            helpCommand(string.sub(command, #help_command_string + 1, #command))
+        elseif string.sub(command, 1, #set_base_patience_multiplier_command_string) == set_base_patience_multiplier_command_string then
+            setBasePatienceMultiplierCommand(tonumber(string.sub(command, #set_base_patience_multiplier_command_string + 1, #command)))
+        elseif string.sub(command, 1, #show_base_patience_multiplier_command_string) == show_base_patience_multiplier_command_string then
+            showBasePatienceMultiplierCommand()
+        elseif string.sub(command, 1, #set_min_eating_duration_command_string) == set_min_eating_duration_command_string then
+            setMinEatingDurationCommand(tonumber(string.sub(command, #set_min_eating_duration_command_string + 1, #command)))
+        elseif string.sub(command, 1, #show_min_eating_duration_command_string) == show_min_eating_duration_command_string then
+            showMinEatingDurationCommand()
+        elseif string.sub(command, 1, #set_max_eating_duration_command_string) == set_max_eating_duration_command_string then
+            setMaxEatingDurationCommand(tonumber(string.sub(command, #set_max_eating_duration_command_string + 1, #command)))
+        elseif string.sub(command, 1, #show_max_eating_duration_command_string) == show_max_eating_duration_command_string then
+            showMaxEatingDurationCommand()
+        elseif string.sub(command, 1, #set_patience_tweaks_command_string) == set_patience_tweaks_command_string then
+            setPatienceTweaksCommand(tostring(string.sub(command, #set_patience_tweaks_command_string + 1, #command)))
+        elseif string.sub(command, 1, #show_patience_tweaks_command_string) == show_patience_tweaks_command_string then
+            showPatienceTweaksCommand()
+        elseif string.sub(command, 1, #set_eating_duration_tweaks_command_string) == set_eating_duration_tweaks_command_string then
+            setEatingDurationTweaksCommand(tostring(string.sub(command, #set_eating_duration_tweaks_command_string + 1, #command)))
+        elseif string.sub(command, 1, #show_eating_duration_tweaks_command_string) == show_eating_duration_tweaks_command_string then
+            showEatingDurationTweaksCommand()
+        else 
+            sendWarningSystemMessage("Unknown command. Refer to the mod page for a list of commands.")
         end
     end
 end

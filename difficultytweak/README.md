@@ -15,10 +15,19 @@ The Difficulty Tweaks Mod for `Fast Food Simulator`, dynamically adjusts various
 
 - `/set_max_customers <number>`: Set the maximum number of customers. `Default: 500`
 - `/set_min_customers <number>`: Set the minimum number of customers. `Default: 25`
+- `/set_base_patience_multiplier <number>`: Set the base patience multiplier. `Default: 1.0`
 - `/df_reset`: Reset the configuration to default settings.
 - `/show_min_customers`: Display the current minimum customers setting.
 - `/show_max_customers`: Display the current maximum customers setting.
-
+- `/show_base_patience_multiplier`: Display the current base patience multiplier.
+- `/set_max_eating_duration <number>`: Set the maximum eating duration. `Default: 30.0`
+- `/set_min_eating_duration <number>`: Set the minimum eating duration. `Default: 15.0`
+- `/show_min_eating_duration`: Display the current minimum eating duration setting.
+- `/show_max_eating_duration`: Display the current maximum eating duration setting.
+- `/set_eating_duration_tweaks <true/false>`: Enable or disable dynamic eating duration adjustments. `Default: true`
+- `/show_eating_duration_tweaks`: Display the current status of dynamic eating duration adjustments.
+- `/set_patience_tweaks <true/false>`: Enable or disable dynamic patience adjustments. `Default: true`
+- `/show_patience_tweaks`: Display the current status of dynamic patience adjustments.
 ## Installation
 
 1. Download the latest release from the [Releases page](https://github.com/creativious/DifficultyTweaksMod/releases) or from the nexus page (To be linked).
