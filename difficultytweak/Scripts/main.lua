@@ -18,6 +18,8 @@ CONFIG = {
     ENABLE_PATIENCE_TWEAKS = true
 }
 
+--- Calculates the base patience multiplier based on the maximum amount of customers that can be in the bakery at any given time
+---@return number BasePatienceMultiplier base patience multiplier
 function calcBasePatienceMultiplier()
     return (CONFIG.getBasePatienceMultiplier() + (CONFIG.getMaxCustomers() / 50) / 10)
 end
@@ -27,34 +29,50 @@ BASE_PATIENCE_MULTIPLIER = 1.0
 
 ---#region Config Getters
 
+--- Returns the maximum number of customers
+---@return integer maxCustomers maximum number of customers
 function CONFIG.getMaxCustomers()
     return CONFIG["MAX_POSSIBLE_CUSTOMERS"]
 end
 
+--- Returns the minimum number of customers
+---@return integer minCustomers minimum number of customers
 function CONFIG.getMinCustomers()
     return CONFIG["MIN_POSSIBLE_CUSTOMERS"]
 end
 
+--- Returns the maximum eating duration
+---@return number maxEatingDuration maximum eating duration
 function CONFIG.getMaxEatingDuration()
     return CONFIG["MAX_EATING_DURATION"]
 end
 
+--- Returns the minimum eating duration
+---@return number minEatingDuration minimum eating duration
 function CONFIG.getMinEatingDuration()
     return CONFIG["MIN_EATING_DURATION"]
 end
 
+--- Returns the base patience multiplier
+---@return number basePatienceMultiplier base patience multiplier
 function CONFIG.getBasePatienceMultiplier()
     return CONFIG["BASE_PATIENCE_MULTIPLIER"]
 end
 
+--- Returns whether eating duration tweaks are enabled
+---@return boolean isEatingDurationTweaksEnabled whether eating duration tweaks are enabled
 function CONFIG.getEnableEatingDurationTweaks()
     return CONFIG["ENABLE_EATING_DURATION_TWEAKS"]
 end
 
+--- Returns whether patience tweaks are enabled
+---@return boolean isPatienceTweaksEnabled whether patience tweaks are enabled
 function CONFIG.getEnablePatienceTweaks()
     return CONFIG["ENABLE_PATIENCE_TWEAKS"]
 end
 
+--- Returns a copy of the CONFIG table with functions filtered out
+---@return table conf configuration table without functions
 function CONFIG.getConfig()
     local conf = {}
     for key, value in pairs(CONFIG) do
@@ -68,45 +86,60 @@ end
 
 ---#region Config Setters
 
+--- Sets the minimum number of customers
+---@param value integer minimum number of customers
 function CONFIG.setMinCustomers(value)
     CONFIG["MIN_POSSIBLE_CUSTOMERS"] = value
     CONFIG.write()
 end
 
+--- Sets the maximum number of customers
+---@param value integer maximum number of customers
 function CONFIG.setMaxCustomers(value)
     CONFIG["MAX_POSSIBLE_CUSTOMERS"] = value
     BASE_PATIENCE_MULTIPLIER = CONFIG.getBasePatienceMultiplier() + ((value / 50) / 10)
     CONFIG.write()
 end
 
+--- Sets the base patience multiplier
+---@param value number base patience multiplier
 function CONFIG.setBasePatienceMultiplier(value)
     CONFIG["BASE_PATIENCE_MULTIPLIER"] = value
     BASE_PATIENCE_MULTIPLIER = calcBasePatienceMultiplier()
     CONFIG.write()
 end
 
+--- Sets the minimum eating duration
+---@param value number minimum eating duration
 function CONFIG.setMinEatingDuration(value)
     CONFIG["MIN_EATING_DURATION"] = value
     CONFIG.write()
 end
 
+--- Sets the maximum eating duration
+---@param value number maximum eating duration
 function CONFIG.setMaxEatingDuration(value)
     CONFIG["MAX_EATING_DURATION"] = value
     CONFIG.write()
 end
 
+--- Sets whether eating duration tweaks are enabled
+---@param value boolean whether eating duration tweaks are enabled
 function CONFIG.setEnableEatingDurationTweaks(value)
     CONFIG["ENABLE_EATING_DURATION_TWEAKS"] = value
     CONFIG.write()
 end
 
+--- Sets whether patience tweaks are enabled
+---@param value boolean whether patience tweaks are enabled
 function CONFIG.setEnablePatienceTweaks(value)
     CONFIG["ENABLE_PATIENCE_TWEAKS"] = value
     CONFIG.write()
 end
 
----comment
----@param value table
+
+--- Sets the entire config table
+---@param value table the new config table
 function CONFIG.setConfig(value)
     value = filterFunctionsFromTable(value)
     for key, value in pairs(value) do
@@ -120,34 +153,42 @@ end
 
 ---#region Config Reset
 
+--- Resets the maximum number of customers to its default value
 function CONFIG.resetMaxCustomers()
     CONFIG["MAX_POSSIBLE_CUSTOMERS"] = 500
 end
 
+--- Resets the minimum number of customers to its default value
 function CONFIG.resetMinCustomers()
     CONFIG["MIN_POSSIBLE_CUSTOMERS"] = 25
 end
 
+--- Resets the minimum eating duration to its default value
 function CONFIG.resetMinEatingDuration()
     CONFIG["MIN_EATING_DURATION"] = 15.0
 end
 
+--- Resets the maximum eating duration to its default value
 function CONFIG.resetMaxEatingDuration()
     CONFIG["MAX_EATING_DURATION"] = 30.0
 end
 
+--- Resets the base patience multiplier to its default value
 function CONFIG.resetBasePatienceMultiplier()
     CONFIG["BASE_PATIENCE_MULTIPLIER"] = 1.0
 end
 
+--- Resets the enabling of eating duration tweaks to its default value
 function CONFIG.resetEnableEatingDurationTweaks()
     CONFIG["ENABLE_EATING_DURATION_TWEAKS"] = true
 end
 
+--- Resets the enabling of patience tweaks to its default value
 function CONFIG.resetEnablePatienceTweaks()
     CONFIG["ENABLE_PATIENCE_TWEAKS"] = true
 end
 
+--- Resets all configuration settings to their default values
 function CONFIG.reset()
     CONFIG.resetMaxCustomers()
     CONFIG.resetMinCustomers()
@@ -161,10 +202,12 @@ end
 
 ---#endregion
 
+--- Writes the config to the config file
 function CONFIG.write()
     write_to_config(CONFIG.getConfig())
 end
 
+--- Reads the config from the config file and sets it
 function CONFIG.read()
     CONFIG.setConfig(read_config())
     CONFIG.write()
@@ -397,6 +440,8 @@ function getLuaTableLength(T)
 end
 
 
+--- Sets the minimum customers that can be in the bakery at any given time
+---@param minCustomers number Minimum customers that can be in the bakery at any given time
 function setMinCustomersCommand(minCustomers)
     if minCustomers == nil then
         sendWarningSystemMessage("Incorrect usage of the command.")
@@ -418,6 +463,8 @@ function setMinCustomersCommand(minCustomers)
     sendInfoSystemMessage("Reload saves to apply changes.")
 end
 
+--- Sets the maximum customers that can be in the bakery at any given time
+---@param maxCustomers number Maximum customers that can be in the bakery at any given time
 function setMaxCustomersCommand(maxCustomers)
     if maxCustomers == nil then
         sendWarningSystemMessage("Incorrect usage of the command.")
@@ -439,20 +486,25 @@ function setMaxCustomersCommand(maxCustomers)
     sendInfoSystemMessage("Reload saves to apply changes.")
 end
 
+--- Shows the current minimum customers that can be in the bakery at any given time
 function showMinCustomersCommand()
     sendInfoSystemMessage("Minimum Customers: " .. tostring(CONFIG.getMinCustomers()))
 end
 
+--- Shows the current maximum customers that can be in the bakery at any given time
 function showMaxCustomersCommand()
     sendInfoSystemMessage("Maximum Customers: " .. tostring(CONFIG.getMaxCustomers()))
 end
 
+--- Resets the config file to its default values
 function resetConfigCommand()
     sendInfoSystemMessage("Resetting config file.")
     CONFIG.reset()
     sendInfoSystemMessage("Reload saves to apply changes.")
 end
 
+--- Sets the base patience multiplier for when there are no customers in the bakery
+---@param basePatienceMultiplier number Base patience multiplier for when there are no customers in the bakery
 function setBasePatienceMultiplierCommand(basePatienceMultiplier)
     if basePatienceMultiplier == nil then
         sendWarningSystemMessage("Incorrect usage of the command.")
@@ -469,10 +521,13 @@ function setBasePatienceMultiplierCommand(basePatienceMultiplier)
     sendInfoSystemMessage("Reload saves to apply changes.")
 end
 
+--- Shows the current base patience multiplier for when there are no customers in the bakery
 function showBasePatienceMultiplierCommand()
     sendInfoSystemMessage("Base Patience Multiplier: " .. tostring(CONFIG.getBasePatienceMultiplier()))
 end
 
+--- Sets the minimum eating duration for customers
+---@param minEatingDuration number Minimum eating duration for customers
 function setMinEatingDurationCommand(minEatingDuration)
     if minEatingDuration == nil then
         sendWarningSystemMessage("Incorrect usage of the command.")
@@ -489,10 +544,13 @@ function setMinEatingDurationCommand(minEatingDuration)
     sendInfoSystemMessage("Reload saves to apply changes.")
 end
 
+--- Shows the current minimum eating duration for customers
 function showMinEatingDurationCommand()
     sendInfoSystemMessage("Minimum Eating Duration: " .. CONFIG.getMinEatingDuration())
 end
 
+--- Sets the maximum eating duration for customers
+---@param maxEatingDuration number Maximum eating duration for customers
 function setMaxEatingDurationCommand(maxEatingDuration)
     if maxEatingDuration == nil then
         sendWarningSystemMessage("Incorrect usage of the command.")
@@ -509,6 +567,9 @@ function setMaxEatingDurationCommand(maxEatingDuration)
     sendInfoSystemMessage("Reload saves to apply changes.")
 end
 
+--- Converts a string to a boolean value
+--- @param value string The string to convert ("true" or "false")
+--- @return boolean|nil value The boolean value if conversion is successful, otherwise nil
 function parseToBoolean(value)
     value = string.lower(value)
     
@@ -520,7 +581,10 @@ function parseToBoolean(value)
     return nil
 end
 
+--- Sets whether patience tweaks are enabled
+---@param patienceTweaks string Whether patience tweaks are enabled
 function setPatienceTweaksCommand(patienceTweaks)
+    ---@diagnostic disable-next-line
     patienceTweaks = parseToBoolean(patienceTweaks)
     if patienceTweaks == nil then
         sendWarningSystemMessage("Incorrect usage of the command.")
@@ -537,11 +601,15 @@ function setPatienceTweaksCommand(patienceTweaks)
     sendInfoSystemMessage("Reload saves to apply changes.")
 end
 
+--- Shows the current state of the patience tweaks
 function showPatienceTweaksCommand()
     sendInfoSystemMessage("Patience Tweaks: " .. tostring(CONFIG.getEnablePatienceTweaks()))
 end
 
+--- Sets whether eating duration tweaks are enabled
+---@param eatingDurationTweaks string Whether eating duration tweaks are enabled
 function setEatingDurationTweaksCommand(eatingDurationTweaks)
+    ---@diagnostic disable-next-line
     eatingDurationTweaks = parseToBoolean(eatingDurationTweaks)
     if eatingDurationTweaks == nil then
         sendWarningSystemMessage("Incorrect usage of the command.")
@@ -558,14 +626,17 @@ function setEatingDurationTweaksCommand(eatingDurationTweaks)
     sendInfoSystemMessage("Reload saves to apply changes.")
 end
 
+--- Shows the current state of the eating duration tweaks
 function showEatingDurationTweaksCommand()
     sendInfoSystemMessage("Eating Duration Tweaks: " .. tostring(CONFIG.getEnableEatingDurationTweaks()))
 end
 
+--- Shows the current maximum eating duration for customers
 function showMaxEatingDurationCommand()
     sendInfoSystemMessage("Maximum Eating Duration: " .. tostring(CONFIG.getMaxEatingDuration()))
 end
 
+--- Displays the startup message with information about the mod and available commands
 function displayStartupMessage()
     sendInfoSystemMessage("Difficulty Tweaks - By Creativious")
     sendInfoSystemMessage("Commands (Listed on mod page):")
@@ -573,6 +644,8 @@ function displayStartupMessage()
     sendInfoSystemMessage("^ Displays information about a command.")
 end
 
+--- Displays information about a command
+---@param command string The command to get information about
 function helpCommand(command)
     if command == nil then
         sendWarningSystemMessage("Incorrect usage of the command.")
@@ -640,6 +713,9 @@ function helpCommand(command)
     end
 end
 
+--- Handles commands issued to the mod, parsing and executing the appropriate command functions.
+--- Commands should be prefixed with a slash ("/").
+---@param command string The command string issued by the user, including parameters.
 function handleCommands(command)
     print("Handling command " .. command .. "\n")
     if string.sub(command, 1, 1) == "/" then
