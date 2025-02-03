@@ -1,0 +1,40 @@
+[size=6][b]Difficulty Tweaks Mod for Fast Food Simulator[/b][/size]
+
+The Difficulty Tweaks Mod for `Fast Food Simulator`, dynamically adjusts various game play elements to elevate the game's challenge. It scales customer numbers based on restaurant level and days played, decreases customer patience as more customers are seated and waiting, and adjusts eating duration based on seating. An in-game command system also allows for real-time adjustments.
+
+[size=4][b]Features[/b][/size]
+
+- [b]Dynamic Customer Management[/b]: Adjust the number of customers based on the restaurant level and total days played, ensuring a nightmarish experience.
+- [b]Configurable Settings[/b]: Easily modify the minimum and maximum possible customers via in-game commands or configuration files (json).
+- [b]Adaptive Customer Patience[/b]: The patience of customers will adjust based on the amount of customers seated and waiting, with a slight boost if all tables are full. This ensures that the game is still possible to complete, but still provides a formidable challenge.
+- [b]Dynamic Eating Duration[/b]: Adjust the eating duration of customers based on the amount of customers seated, with a slight boost if all tables are full. This ensures that the game is still possible to complete, but still provides a formidable challenge.
+- [b]In-Game Command System[/b]: Enter commands directly into the game's chat, receive instant feedback, and adjust settings on the fly.
+
+[size=4][b]Commands[/b][/size]
+[list]
+[*] [code]/set_max_customers <number> |  Default: 500 | Set the maximum number of customers. [/code]
+[*] [code]/set_min_customers <number> |  Default: 25 | Set the minimum number of customers. [/code]
+[*] [code]/set_base_patience_multiplier <number> |  Default: 1.0 | Set the base patience multiplier. [/code]
+[*] [code]/df_reset | Reset the configuration to default settings. [/code]
+[*] [code]/show_min_customers | Display the current minimum customers setting. [/code]
+[*] [code]/show_max_customers | Display the current maximum customers setting. [/code]
+[*] [code]/show_base_patience_multiplier | Display the current base patience multiplier. [/code]
+[*] [code]/set_max_eating_duration <number> |  Default: 30.0 | Set the maximum eating duration. [/code]
+[*] [code]/set_min_eating_duration <number> |  Default: 15.0 | Set the minimum eating duration. [/code]
+[*] [code]/show_min_eating_duration | Display the current minimum eating duration setting. [/code]
+[*] [code]/show_max_eating_duration | Display the current maximum eating duration setting. [/code]
+[*] [code]/set_eating_duration_tweaks <true/false> |  Default: true | Enable or disable dynamic eating duration adjustments. [/code]
+[*] [code]/show_eating_duration_tweaks | Display the current status of dynamic eating duration adjustments. [/code]
+[*] [code]/set_patience_tweaks <true/false> |  Default: true | Enable or disable dynamic patience adjustments. [/code]
+[*] [code]/show_patience_tweaks | Display the current status of dynamic patience adjustments. [/code]
+[/list] 
+[size=4][b]Installation[/b][/size]
+
+1. Download the latest release from the [url=https://github.com/Creativious/fastfoodsim_difficultytweaks/releases]Releases page[/url] or from the nexus page (To be linked).
+2. Download the latest version of the mod-loader from the [url=https://github.com/UE4SS-RE/RE-UE4SS]RE-UE4SS[/url] repository.
+3. Copy the contents to the games `\Binaries\Win64` folder, such as [code](SteamLibrary)\steamapps\common\Fast Food Simulator\ProjectBakery\Binaries\Win64[/code]
+4. Start the game so that the mod loader can generate the required files
+5. Extract the mod's zip or 7z file to the mods directory, and suffer through the pain of this mod
+
+[size=4][b]Disclaimer[/b][/size]
+This mod may be randomly abandoned for no reason (My interests change ig 🤷‍♂️), without notice, or any other changes. USE AT YOUR OWN RISK.
