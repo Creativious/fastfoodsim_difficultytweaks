@@ -46,4 +46,17 @@ function TableUtils.count_keys(tbl)
     return count
 end
 
+--- Checks if the table contains a copy of this key, returns true if it does, false if it doesn't
+---@param tbl table the table to check
+---@param key string the key to check the table with
+---@return boolean bool The return boolean
+function TableUtils.does_table_contain_key(tbl, key)
+    for tbl_key, _ in pairs(tbl) do
+        if key == tbl_key then
+            return true
+        end
+    end
+    return false
+end
+
 return TableUtils

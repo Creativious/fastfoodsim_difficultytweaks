@@ -2,6 +2,7 @@ ChatHook = require("libs/chathook")
 TableUtils = require("libs/tableutils")
 
 CommandManager = {
+    ---@type Command[]
     commands = {}
 }
 
@@ -78,10 +79,68 @@ end
 ---@param command string
 ---@param args CommandArg[]
 ---@param callback function
+---@return string | nil val the return value, if it is a nil that means it already exists
 function CommandManager.__internal_register_command(command, desciption, args, callback)
+    if TableUtils.does_table_contain_key(CommandManager.commands, command) then
+        error("The command " .. tostring(command) .. " has already been registered")
+        return nil
+    end
     local obj = CommandManager.__create_command_obj(command, desciption, args, callback)
     table.insert(CommandManager.commands, obj)
+    return command
 end
 
+--- Gets the number of arguments for a command
+---@param command_obj Command
+---@return integer arg_count
+function CommandManager.__get_arg_count(command_obj)
+    return TableUtils.count_keys(command_obj.args)
+end
+
+--- Gets the usage string for the argument, such as <true|false> or <number> or <string>
+---@param command_arg CommandArg
+---@return string return_val
+function CommandManager.get_usage_text_for_argument(command_arg)
+    if command_arg.arg_type == "string" then
+        return "<string>"
+    elseif command_arg.arg_type == "boolean" then
+        return "<true|false>"
+    elseif command_arg.arg_type == "number" then
+        return "<number>"
+    end
+
+    return "<unknown|any>"
+
+end
+
+--- Get's the string the tells the end user how to use the command
+---@param command_obj Command
+function CommandManager.get_usage_string_from_command(command_obj)
+    local usage_string = "Usage: /" .. command_obj.name
+    local arg_count = CommandManager.__get_arg_count(command_obj)
+    if (arg_count == 0) then
+        return usage_string
+    end
+    local i = 0
+    while i < arg_count do
+        usage_string = usage_string .. " "
+        local arg = command_obj.args[i+1]
+        local arg_string = CommandManager.get_usage_text_for_argument(arg)
+        usage_string = usage_string .. arg_string
+        i = (i or 0) + 1
+    end
+
+    return usage_string
+
+
+end
+
+---comment
+---@param command string
+---@return Command val
+function CommandManager.get_command(command)
+    local val = CommandManager.commands[command]
+    return val
+end
 
 return CommandManager
