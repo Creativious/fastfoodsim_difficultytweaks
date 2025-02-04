@@ -16,6 +16,7 @@ Commands that can set a value, can also show a value by leaving the argument bla
 - `/max_customers <number>`  `Default: 500`  Sets|Shows the maximum amount of customers that can be in the restaurant at any given time.
 - `/min_customers <number>`  `Default: 25`  Sets|Shows the minimum amount of customers that can be in the restaurant at any given time.
 - `/base_patience_multiplier <number>`  `Default: 1.0` Sets|Shows the base patience multiplier.
+- `/max_patience_multiplier <number>`  `Default: 2.2` Sets|Shows the maximum patience multiplier (Set to -1 to leave it uncapped).
 - `/max_eating_duration <number>` `Default: 30.0` Set the maximum eating duration.
 - `/min_eating_duration <number>` `Default: 15.0` Set the minimum eating duration.
 - `/eating_duration_tweaks <true/false>` `Default: true` Toggle|Display eating duration tweaks.

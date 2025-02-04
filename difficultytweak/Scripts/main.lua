@@ -106,6 +106,11 @@ local function processCustomers()
         possible_eating_duration_reduction = 0.35
     end
     PATIENCE_MULTIPLIER = BASE_PATIENCE_MULTIPLIER + (CUSTOMERS_WITH_ORDER_NUMBER / 300) + possible_patience_bonus + (WAITING_CUSTOMERS / 600)
+    if (Config.get("MAX_PATIENCE_MULTIPLIER") ~= -1) then
+        if (PATIENCE_MULTIPLIER > Config.get("MAX_PATIENCE_MULTIPLIER")) then
+            PATIENCE_MULTIPLIER = Config.get("MAX_PATIENCE_MULTIPLIER")
+        end
+    end
     EATING_DURATION_BASE_MULTIPLIER = EATING_DURATION_BASE_MULTIPLIER - possible_eating_duration_reduction - (WAITING_CUSTOMERS / 400) - (CUSTOMERS_WITH_ORDER_NUMBER / 100)
     
 end
@@ -248,6 +253,7 @@ function on_startup()
     Config.set_default("MAX_POSSIBLE_CUSTOMERS", 500)
     Config.set_default("MIN_EATING_DURATION", 15.0)
     Config.set_default("BASE_PATIENCE_MULTIPLIER", 1.0)
+    Config.set_default("MAX_PATIENCE_MULTIPLIER", 2.2)
     Config.set_default("MAX_EATING_DURATION", 30.0)
     Config.set_default("ENABLE_EATING_DURATION_TWEAKS", true)
     Config.set_default("ENABLE_PATIENCE_TWEAKS", true)
@@ -258,6 +264,7 @@ function on_startup()
     CommandManager.register_command_for_config("max_customers", "MAX_POSSIBLE_CUSTOMERS", "Sets|Shows the maximum amount of customers that can be in the restaurant at any given time.")
     CommandManager.register_command_for_config("min_customers", "MIN_POSSIBLE_CUSTOMERS", "Sets|Shows the minimum amount of customers that can be in the restaurant at any given time.")
     CommandManager.register_command_for_config("base_patience_multiplier", "BASE_PATIENCE_MULTIPLIER", "Sets|Shows the base patience multiplier.")
+    CommandManager.register_command_for_config("max_patience_multiplier", "MAX_PATIENCE_MULTIPLIER", "Sets|Shows the maximum patience multiplier. (Set to -1 to leave it uncapped)")
     CommandManager.register_command_for_config("min_eating_duration", "MIN_EATING_DURATION", "Sets|Shows the minimum eating duration for customers.")
     CommandManager.register_command_for_config("max_eating_duration", "MAX_EATING_DURATION", "Sets|Shows the maximum eating duration for customers.")
     CommandManager.register_command_for_config("eating_duration_tweaks", "ENABLE_EATING_DURATION_TWEAKS", "Toggle|Display eating duration tweaks.")
