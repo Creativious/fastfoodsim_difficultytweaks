@@ -129,13 +129,12 @@ end
 
 function calc_spawn_delay()
     ---@type ABP_BakeryGameState_Ingame_C
-    if (FIRST_CALC_DAY_LENGTH) then
+    if (FIRST_CALC_DAY_LENGTH == false) then
         local gameState = FindFirstOf("BP_BakeryGameState_Ingame_C")
         local seconds = ((12 * 60) / gameState.GameTimeMultiplier) * 60
         DAY_LENGTH = seconds
         FIRST_CALC_DAY_LENGTH = true
-        CALCULATED_DELAY_ON_CUSTOMER_SPAWN = DAY_LENGTH / CUSTOMERS_FOR_DAY
-        return
+        CALCULATED_DELAY_ON_CUSTOMER_SPAWN = DAY_LENGTH / getMaxCustomers()
     end
     return CALCULATED_DELAY_ON_CUSTOMER_SPAWN
     
@@ -166,7 +165,8 @@ local function StartMod()
 
     -- @TODO: Make these scale with time
     RegisterHook('/Game/Blueprints/Gameplay/CustomerQueue/BP_CustomerManager.BP_CustomerManager_C:GenerateSpawnCooldown', function(context)
-        return calc_spawn_delay()
+        local delay = calc_spawn_delay()
+        return delay
     end)
 
     RegisterHook('/Game/Blueprints/Gameplay/CustomerQueue/BP_CustomerManager.BP_CustomerManager_C:GenerateDriveThruSpawnCooldown', function(context)
