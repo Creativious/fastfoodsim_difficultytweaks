@@ -12,6 +12,7 @@
     ],
     "diagnostics.globals": [
         "NotifyOnNewObject",
-        "RegisterHook"
+        "RegisterHook",
+        "FindAllOf"
     ]
 }

@@ -1,4 +1,5 @@
 print("Loading Difficulty Tweak - By Creativious")
+MOD_VERSION = "1.2.0-rc1"
 
 -- Credits For JSON https://github.com/rxi/json.lua/blob/master/json.lua
 
@@ -115,6 +116,22 @@ local function processCustomers()
     
 end
 
+local function processDriverCustomers()
+    local findAllCustomers = FindAllOf("BP_DriverCustomer_C")
+    if findAllCustomers ~= nil then
+        for _, customer in pairs(findAllCustomers) do
+            if customer then
+                local patience_speed = customer:GetPropertyValue("PatienceSpeed")
+                if Config.get("ENABLE_DRIVETHRU_PATIENCE_TWEAKS") then
+                    if patience_speed ~= round(DEFAULT_PATIENCE * PATIENCE_MULTIPLIER) then
+                        customer:SetPatienceSpeed(round(DEFAULT_PATIENCE * PATIENCE_MULTIPLIER))
+                    end
+                end
+            end
+        end
+    end
+end
+
 --- Returns the length of a table
 ---@param T table
 ---@return integer
@@ -126,7 +143,7 @@ end
 
 --- Displays the startup message with information about the mod and available commands
 function displayStartupMessage()
-    ChatHook.send_info_to_chat("Difficulty Tweaks - By Creativious")
+    ChatHook.send_info_to_chat("Difficulty Tweaks(v" .. MOD_VERSION .. ")" .." - By Creativious")
     ChatHook.send_info_to_chat("Commands (Listed on mod page):")
     ChatHook.send_info_to_chat("/help <command>")
     ChatHook.send_info_to_chat("^ Displays information about a command.")
@@ -235,6 +252,7 @@ end)
 -- Run the getCustomers function every 2 seconds
 LoopAsync(2000, function()
     processCustomers()
+    processDriverCustomers()
 end)
 
 --- /df_reset
@@ -257,6 +275,7 @@ function on_startup()
     Config.set_default("MAX_EATING_DURATION", 30.0)
     Config.set_default("ENABLE_EATING_DURATION_TWEAKS", true)
     Config.set_default("ENABLE_PATIENCE_TWEAKS", true)
+    Config.set_default("ENABLE_DRIVETHRU_PATIENCE_TWEAKS", true)
 
     Config.read()
 
@@ -269,6 +288,7 @@ function on_startup()
     CommandManager.register_command_for_config("max_eating_duration", "MAX_EATING_DURATION", "Sets|Shows the maximum eating duration for customers.")
     CommandManager.register_command_for_config("eating_duration_tweaks", "ENABLE_EATING_DURATION_TWEAKS", "Toggle|Display eating duration tweaks.")
     CommandManager.register_command_for_config("patience_tweaks", "ENABLE_PATIENCE_TWEAKS", "Toggle|Display whether or not the patience tweaks are enabled.")
+    CommandManager.register_command_for_config("drivethru_patience_tweaks", "ENABLE_DRIVETHRU_PATIENCE_TWEAKS", "Toggle|Display whether or not the drivethru patience tweaks are enabled.")
 
     CommandManager.register_command("df_reset", "Reset the configuration to default settings.", {}, df_reset_command)
 

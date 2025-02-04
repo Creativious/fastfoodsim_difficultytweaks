@@ -21,6 +21,7 @@ Commands that can set a value, can also show a value by leaving the argument bla
 - `/min_eating_duration <number>` `Default: 15.0` Set the minimum eating duration.
 - `/eating_duration_tweaks <true/false>` `Default: true` Toggle|Display eating duration tweaks.
 - `/patience_tweaks <true/false>` `Default: true` Toggle|Display whether or not the patience tweaks are enabled.
+- `/drivethru_patience_tweaks <true/false>` `Default: true` Toggle|Display whether or not the drivethru patience tweaks are enabled.
 
 - `/df_reset`: Reset the configuration to default settings.
 ## Installation
