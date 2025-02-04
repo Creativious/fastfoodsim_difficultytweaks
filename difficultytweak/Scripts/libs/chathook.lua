@@ -2,8 +2,17 @@ local chathook = {_version = "0.1.0"}
 
 chathook.chat_callbacks = {}
 
+chathook.__has_hooks_been_registered = false
+
+NotifyOnNewObject('/Game/Blueprints/GameMode/GameState/BP_BakeryGameState.BP_BakeryGameState_C', function()
+    if chathook.__has_hooks_been_registered == false then
+        chathook.__register_hooks()
+        chathook.__has_hooks_been_registered = true
+    end
+end)
+
 --- Registers a hook for the chat message events (register_callback_on_chat_message doesn't work without this being used first)
-function chathook.register_hooks()
+function chathook.__register_hooks()
 
     --- when a chat message is received
     RegisterHook("/Game/Blueprints/Characters/Player/BP_Player.BP_Player_C:PlayerChatMessage_OnServer", function(context, message)

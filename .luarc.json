@@ -9,5 +9,9 @@
         "redundant-return-value",
         "assign-type-mismatch",
         "duplicate-doc-field"
+    ],
+    "diagnostics.globals": [
+        "NotifyOnNewObject",
+        "RegisterHook"
     ]
 }

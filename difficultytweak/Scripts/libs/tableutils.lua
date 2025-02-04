@@ -59,4 +59,30 @@ function TableUtils.does_table_contain_key(tbl, key)
     return false
 end
 
+--- Prints out a table
+---@param tbl table
+function TableUtils.print_out_table(tbl)
+    for key, value in pairs(tbl) do
+        if (type(value) == "table") then
+            print(tostring(key) .. ":\n")
+            TableUtils.print_out_table(value)
+        end
+        print(tostring(key) .. ": " .. tostring(value) .. "\n")
+    end
+end
+
+--- Returns the keys in table 1 that are not in table 2
+--- @param tbl1 table
+--- @param tbl2 table
+--- @return table
+function TableUtils.find_mismatched_keys(tbl1, tbl2)
+    local mismatched_keys = {}
+    for key, _ in pairs(tbl1) do
+        if tbl2[key] == nil then
+            table.insert(mismatched_keys, key)
+        end
+    end
+    return mismatched_keys
+end
+
 return TableUtils
