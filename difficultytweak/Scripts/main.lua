@@ -105,7 +105,7 @@ local function processCustomers()
         possible_patience_bonus = 0.25
         possible_eating_duration_reduction = 0.35
     end
-    PATIENCE_MULTIPLIER = BASE_PATIENCE_MULTIPLIER + (CUSTOMERS_WITH_ORDER_NUMBER / 100) + possible_patience_bonus + (WAITING_CUSTOMERS / 200)
+    PATIENCE_MULTIPLIER = BASE_PATIENCE_MULTIPLIER + (CUSTOMERS_WITH_ORDER_NUMBER / 300) + possible_patience_bonus + (WAITING_CUSTOMERS / 600)
     EATING_DURATION_BASE_MULTIPLIER = EATING_DURATION_BASE_MULTIPLIER - possible_eating_duration_reduction - (WAITING_CUSTOMERS / 400) - (CUSTOMERS_WITH_ORDER_NUMBER / 100)
     
 end
