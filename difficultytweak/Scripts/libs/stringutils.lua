@@ -22,3 +22,12 @@ end
 function StringUtils.find_first_word(str)
     return str:match("%S+")
 end
+
+--- Uppercases the first letter of each word in a string
+--- @param str string
+--- @return string
+function StringUtils.capitalize(str)
+    return str:gsub("^%l", string.upper)
+end
+
+return StringUtils

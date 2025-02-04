@@ -50,8 +50,7 @@ function Config.write()
         error("Config location has not been set, make sure to set the location using Config.set_location(location)")
         return
     end
-    local filtered_config = TableUtils.copy_without_functions(Config.__CONFIG)
-    FileUtils.write_file(Config.__LOCATION, Json.encode(filtered_config))
+    FileUtils.write_file(Config.__LOCATION, Json.encode(Config.__CONFIG))
 end
 
 function Config.read()

@@ -115,11 +115,11 @@ end
 ---@return string | nil val the return value, if it is a nil that means it already exists
 function CommandManager.__internal_register_command(command, desciption, args, optional_config_entry, callback)
     if CommandManager.__HAS_REGISTERED_HOOK == false then
+        CommandManager.__HAS_REGISTERED_HOOK = true
         ChatHook.register_callback_on_chat_message(CommandManager.__command_callback)
         local bargs = {}
         CommandManager.add_arg_to_table(bargs, "command", "help")
         CommandManager.register_command("help", "Displays information about a command.", bargs, CommandManager.help_command_callback)
-        CommandManager.__HAS_REGISTERED_HOOK = true
     end
     if TableUtils.does_table_contain_key(CommandManager.commands, command) then
         error("The command " .. tostring(command) .. " has already been registered")
@@ -205,6 +205,7 @@ function CommandManager.__config_command_callback(command_feedback)
     local arg = command_feedback.args[1]
     if (arg.value == nil) then
         -- Then this is the show part of the command
+        command_human_name = StringUtils.capitalize(command_human_name)
         ChatHook.send_info_to_chat(command_human_name .. " is currently set to " .. tostring(Config.get(config_entry)))
         return
     end
@@ -234,14 +235,17 @@ function CommandManager.print_command_info_to_chat(command)
     local command_obj = CommandManager.get_command(command)
     local usage_string = CommandManager.get_usage_string_from_command(command_obj)
     ChatHook.send_info_to_chat(usage_string)
-    ChatHook.send_info_to_chat(command_obj.description)
+    ChatHook.send_info_to_chat(command_obj.desciption)
 end
 
 --- The callback for the help command
 ---@param command_feedback CommandFeedback
 function CommandManager.help_command_callback(command_feedback)
     ---@type string
-    local command_name = command_feedback.args[1].value
+    local command_name = nil
+    if (TableUtils.count_keys(command_feedback.args) >= 1) then
+        command_name = command_feedback.args[1].value
+    end
     if (command_name == nil) then
         CommandManager.print_command_info_to_chat("help")
     elseif command_name == "" then
@@ -268,15 +272,19 @@ function CommandManager.__command_callback(msg)
         local command_obj = CommandManager.get_command(command_string)
         local callback = command_obj.callback
         ---@type CommandFeedback
-        local command_feedback = TableUtils.copy_without_functions(CommandFeedbackPreset)
+        local command_feedback = TableUtils.copy(CommandFeedbackPreset)
         command_feedback.command_name = command_string
         command_feedback.optional_config_entry = command_obj.optional_config_entry
         local readable_command = string.sub(msg, #command_string + 2)
         for _, arg in pairs(command_obj.args) do
             ---@type CommandArgFeedback
-            local arg_feedback = TableUtils.copy_without_functions(CommandArgFeedbackPreset)
+            local arg_feedback = TableUtils.copy(CommandArgFeedbackPreset)
             arg_feedback.name = arg.name
             arg_feedback.arg_type = arg.arg_type
+            if (readable_command == "") then
+                arg_feedback.value = nil
+                goto continue
+            end
             if (StringUtils.replace_char(readable_command, " ", "") == "") then
                 arg_feedback.value = nil
             elseif (arg.arg_type == "number") then
@@ -307,7 +315,9 @@ function CommandManager.__command_callback(msg)
                     arg_feedback.value = first_word
                 end
             end
+            ::continue::
             table.insert(command_feedback.args, arg_feedback)
+            
         end
         callback(command_feedback)
     end

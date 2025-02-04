@@ -59,6 +59,10 @@ end
 function chathook.__auto_split_string_with_callback(message_type, message, callback)
     local max_length = 48
     local new_message = ""
+    if (message == nil) then
+        error("Received a nil message")
+        return
+    end
     for word in string.gmatch(message, "[^%s]+") do
         local word_length = string.len(word)
         if string.len(new_message) + word_length > max_length then

@@ -2,15 +2,39 @@ TableUtils = {
 
 }
 
---- Copies all key-value pairs from one table to another
----@param from table The source table to copy from
----@return table result New copied table
-function TableUtils.copy(from)
-    local to = {}
-    for key, value in pairs(from) do
-        to[key] = value
+
+---comment
+---@param orig table
+---@param copies table
+---@return table
+function TableUtils.__deepcopy(orig, copies)
+    copies = copies or {}
+    local orig_type = type(orig)
+    local copy
+    if orig_type == 'table' then
+        if copies[orig] then
+            copy = copies[orig]
+        else
+            copy = {}
+            copies[orig] = copy
+            for orig_key, orig_value in next, orig, nil do
+                copy[TableUtils.__deepcopy(orig_key, copies)] = TableUtils.__deepcopy(orig_value, copies)
+            end
+            setmetatable(copy, TableUtils.__deepcopy(getmetatable(orig), copies))
+        end
+    else -- number, string, boolean, etc
+        copy = orig
     end
-    return to
+    return copy
+end
+
+
+--- Copies all key-value pairs from one table to another
+---@param tbl table The source table to copy from
+---@return table result New copied table
+function TableUtils.copy(tbl)
+    local exit_table = TableUtils.__deepcopy(tbl)
+    return exit_table
 end
 
 --- Filters out function entries from a table

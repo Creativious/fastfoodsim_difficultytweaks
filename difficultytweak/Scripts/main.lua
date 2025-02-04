@@ -20,8 +20,6 @@ end
 
 BASE_PATIENCE_MULTIPLIER = 1.0
 
-BASE_PATIENCE_MULTIPLIER = calcBasePatienceMultiplier()
-
 PATIENCE_MULTIPLIER = BASE_PATIENCE_MULTIPLIER
 
 HAS_GOTTEN_DEFAULT_PATIENCE = false
@@ -266,6 +264,8 @@ function on_startup()
     CommandManager.register_command_for_config("patience_tweaks", "ENABLE_PATIENCE_TWEAKS", "Toggle|Display whether or not the patience tweaks are enabled.")
 
     CommandManager.register_command("df_reset", "Reset the configuration to default settings.", {}, df_reset_command)
+
+    BASE_PATIENCE_MULTIPLIER = calcBasePatienceMultiplier()
 
 end
 
