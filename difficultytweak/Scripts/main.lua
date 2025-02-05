@@ -132,15 +132,6 @@ local function processDriverCustomers()
     end
 end
 
---- Returns the length of a table
----@param T table
----@return integer
-function getLuaTableLength(T)
-    local count = 0
-    for _ in pairs(T) do count = count +1 end
-    return count
-end
-
 --- Displays the startup message with information about the mod and available commands
 function displayStartupMessage()
     ChatHook.send_info_to_chat("Difficulty Tweaks(v" .. MOD_VERSION .. ")" .." - By Creativious")
@@ -166,8 +157,9 @@ local function StartMod()
 
     RegisterHook("/Game/Blueprints/Gameplay/CustomerQueue/BP_CustomerManager.BP_CustomerManager_C:GetMaxCustomerNumber", function(context)
         -- This function returns the amount of customers that a day will receive
-        
-        return getMaxCustomers()
+        if Config.get("ENABLE_CUSTOMER_SPAWN_TWEAKS") then
+            return getMaxCustomers()
+        end
     end)
 
     RegisterHook('/Game/Blueprints/Characters/Customer/Tasks/BTT_CustomerEating.BTT_CustomerEating_C:RandomEatingMode', function(context)
@@ -177,7 +169,7 @@ local function StartMod()
         ---@type UBTT_CustomerEating_C
         local customerEating = context:get()
         ---@diagnostic disable-next-line
-        local eating_duration = math.random(Config.get("MIN_POSSIBLE_EATING_TIME"), Config.get("MAX_POSSIBLE_EATING_TIME"))
+        local eating_duration = math.random(Config.get("MIN_EATING_DURATION"), Config.get("MAX_EATING_DURATION"))
         eating_duration = eating_duration * EATING_DURATION_MULTIPLIER
         if (eating_duration < 1.0) then
             eating_duration = 1.0
@@ -185,34 +177,31 @@ local function StartMod()
         customerEating:SetPropertyValue('EatingDuration', eating_duration)
     end)
 
-    -- @TODO: Make these scale with time
     RegisterHook('/Game/Blueprints/Gameplay/CustomerQueue/BP_CustomerManager.BP_CustomerManager_C:GenerateSpawnCooldown', function(context)
-        local delay = calc_spawn_delay()
-        return delay
+        if Config.get("ENABLE_CUSTOMER_SPAWN_TWEAKS") then
+            local delay = calc_spawn_delay()
+            return delay
+        end
+        
     end)
 
     RegisterHook('/Game/Blueprints/Gameplay/CustomerQueue/BP_CustomerManager.BP_CustomerManager_C:GenerateDriveThruSpawnCooldown', function(context)
-        return calc_spawn_delay()
+        if Config.get("ENABLE_CUSTOMER_SPAWN_TWEAKS") then
+            local delay = calc_spawn_delay()
+            return delay
+        end
     end)
 
     RegisterHook('/Game/Blueprints/Gameplay/Door/BP_EntranceDoor.BP_EntranceDoor_C:SetEntranceDoorOpen', function(context)
         FIRST_CALC_DAY_LENGTH = false
-        CUSTOMERS_FOR_DAY = getMaxCustomers()
-        if FIRST_TIME_GETTING_HELP_MESSSAGE == false then
-            displayStartupMessage()
-            FIRST_TIME_GETTING_HELP_MESSSAGE = true
+        if Config.get("ENABLE_CUSTOMER_SPAWN_TWEAKS") then
             ChatHook.send_info_to_chat(tostring(getMaxCustomers()) .. " Customers will come by today!")
+            CUSTOMERS_FOR_DAY = getMaxCustomers()
         end
-    end)
-
-    RegisterHook('/Game/Blueprints/GameMode/GameState/BP_BakeryGameState_Ingame.BP_BakeryGameState_Ingame_C:NewDayStarted_OnMulticast', function(context)
-        FIRST_CALC_DAY_LENGTH = false
         if FIRST_TIME_GETTING_HELP_MESSSAGE == false then
             displayStartupMessage()
             FIRST_TIME_GETTING_HELP_MESSSAGE = true
         end
-        CUSTOMERS_FOR_DAY = getMaxCustomers()
-        ChatHook.send_info_to_chat(tostring(getMaxCustomers()) .. " Customers will come by today!")
     end)
 end
 
@@ -252,7 +241,11 @@ end)
 -- Run the getCustomers function every 2 seconds
 LoopAsync(2000, function()
     processCustomers()
-    processDriverCustomers()
+    if Config.get("ENABLE_DRIVETHRU_PATIENCE_TWEAKS") then
+        processDriverCustomers()
+    end
+    
+    
 end)
 
 --- /df_reset
@@ -276,6 +269,7 @@ function on_startup()
     Config.set_default("ENABLE_EATING_DURATION_TWEAKS", true)
     Config.set_default("ENABLE_PATIENCE_TWEAKS", true)
     Config.set_default("ENABLE_DRIVETHRU_PATIENCE_TWEAKS", true)
+    Config.set_default("ENABLE_CUSTOMER_SPAWN_TWEAKS", true)
 
     Config.read()
 
@@ -289,6 +283,7 @@ function on_startup()
     CommandManager.register_command_for_config("eating_duration_tweaks", "ENABLE_EATING_DURATION_TWEAKS", "Toggle|Display eating duration tweaks.")
     CommandManager.register_command_for_config("patience_tweaks", "ENABLE_PATIENCE_TWEAKS", "Toggle|Display whether or not the patience tweaks are enabled.")
     CommandManager.register_command_for_config("drivethru_patience_tweaks", "ENABLE_DRIVETHRU_PATIENCE_TWEAKS", "Toggle|Display whether or not the drivethru patience tweaks are enabled.")
+    CommandManager.register_command_for_config("customer_spawn_tweaks", "ENABLE_CUSTOMER_SPAWN_TWEAKS", "Toggle|Display whether or not the customer spawn tweaks are enabled.")
 
     CommandManager.register_command("df_reset", "Reset the configuration to default settings.", {}, df_reset_command)
 
