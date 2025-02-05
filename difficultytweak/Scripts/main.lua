@@ -1,5 +1,5 @@
 print("Loading Difficulty Tweak - By Creativious")
-MOD_VERSION = "1.2.0-rc1"
+MOD_VERSION = "1.2.0-rc2"
 
 -- Credits For JSON https://github.com/rxi/json.lua/blob/master/json.lua
 
